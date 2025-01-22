@@ -99,7 +99,8 @@ def generate_hw01(question):
                         "name": "holiday name"
                     }
                 ]
-            }"""
+            }
+            請給我純文字就好，不要有```json"""
         ),
         HumanMessage(content=question)
     ]
@@ -115,7 +116,7 @@ def generate_hw02(question):
                 "month": x,    //數字
                 "country": "xx"  //ISO國家代碼
             }
-            請給我純文字就好"""
+            請給我純文字就好，不要有```json"""
         ),
         HumanMessage(content=question)
     ]
@@ -146,7 +147,7 @@ def generate_hw02(question):
                     }
                 ]
             }
-            請給我純文字就好"""
+            請給我純文字就好，不要有```json"""
         ),
         HumanMessage(content=("幫我整理以下這些紀念日: " + str(holidays['response'])))
     ]
@@ -165,7 +166,7 @@ def generate_hw03(question2, question3):
                     "month": x,    //數字
                     "country": "xx"  //ISO國家代碼
                 }
-                請給我純文字就好"""
+                請給我純文字就好，不要有```json"""
         },
         config={"configurable": {"session_id": "hw3"}},
     )
@@ -196,7 +197,7 @@ def generate_hw03(question2, question3):
                         "reason": "xxxx"  // 描述為什麼需要或不需要新增節日，具體說明是否該節日已經存在於清單中，另外請一起印出當前清單中已有的節日。請使用中文描述。
                     }
             }
-            請給我純文字就好"""
+            請給我純文字就好，不要有```json"""
         },
         config={"configurable": {"session_id": "hw3"}}
     )
