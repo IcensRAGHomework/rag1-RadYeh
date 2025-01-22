@@ -1,22 +1,33 @@
 import base64
 import json
 import requests
+import time
 import traceback
 import openai
 
+from langchain.chains import LLMChain
+from langchain.output_parsers import PydanticOutputParser
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import AzureChatOpenAI, AzureOpenAI
+from langchain_openai import AzureChatOpenAI
 from mimetypes import guess_type
+from openai import AzureOpenAI
 from model_configurations import get_model_configuration
 from pydantic import BaseModel, Field
 from typing import List
 
 gpt_chat_version = 'gpt-4o'
 gpt_config = get_model_configuration(gpt_chat_version)
+
+
+class hw4_item(BaseModel):
+    score: int
+    
+class hw4_response(BaseModel):
+    Result: hw4_item
 
 class InMemoryHistory(BaseChatMessageHistory, BaseModel):
     """In memory implementation of chat message history."""
@@ -194,46 +205,29 @@ def generate_hw03(question2, question3):
 
     
 def generate_hw04(question):
-    '''
+    start_time = time.time()
     image_path = "baseball.png"
     data_url = local_image_to_data_url(image_path)
-
+    '''
+    time_1 = time.time()
+    total_time = time_1 - start_time
+    print(f"Load image to data url time: {total_time:.4f}s")
+    '''
     vllm = AzureOpenAI(
         api_key=gpt_config['api_key'],  
         api_version=gpt_config['api_version'],
         base_url=f"{gpt_config['api_base']}openai/deployments/{gpt_config['deployment_name']}",
     )
-    
-    # 請求 OpenAI ChatCompletion
-    response = vllm.invoke(
-        messages=[
-            {
-                "role": "system",
-                "content": "Please analyze the image."
-            },
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": data_url
-                        }
-                    },
-                    {
-                        "type": "text",
-                        "text": question
-                    }
-                ]
-            }
-        ],
-        max_tokens=100
-    )
-    
+    '''
+    time_2 = time.time()
+    total_time = time_2 - time_1
+    print(f"Open AzureOpenAI time: {total_time:.4f}s")
+    '''
     response = vllm.chat.completions.create(
+        model=gpt_config['model_name'],
         messages = [
             {
-                "role": "system",
+                "role": "user",
                 "content": [
                     {
                         "type": "image_url",
@@ -254,10 +248,27 @@ def generate_hw04(question):
             }
         ]
     )
-    
-    return response["choices"][0]["message"]["content"]
     '''
-    return ""
+    time_3 = time.time()
+    total_time = time_3 - time_2
+    print(f"Image analysis time: {total_time:.4f}s")
+    '''
+    image_analysis = str(response.choices[0].message.content)
+    response = chain_with_history.invoke(
+        {
+            "question": image_analysis,
+            "output_format": f"輸出格式為：{hw4_response.schema_json(indent=4)} 請給我純文字就好，不要有```json"
+        },
+        config={"configurable": {"session_id": "hw4"}}
+    )
+    '''
+    end_time = time.time()
+    total_time = end_time - time_3
+    print(f"Output parser time: {total_time:.4f}s")
+    total_time = end_time - start_time
+    print(f"Total time time: {total_time:.4f}s")
+    '''
+    return response
     
 def demo(question):
     llm = AzureChatOpenAI(
