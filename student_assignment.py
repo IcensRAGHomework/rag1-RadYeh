@@ -179,12 +179,11 @@ def generate_hw03(question2, question3):
             "question": (question3 + " 我取得了以下的節日清單，請以這個清單作為回答依據:" + str(holidays['response'])),
             "output_format": """回覆成以下的Json格式，回答一個boolean與reason，格式為:
             {
-                "Result": [
+                "Result": 
                     {
                         "add": boolean,  // 表示是否需要將節日新增到節日清單中。根據問題判斷該節日是否存在於清單中，如果不存在，則為 true；否則為 false。
                         "reason": "xxxx"  // 描述為什麼需要或不需要新增節日，具體說明是否該節日已經存在於清單中，另外請一起印出當前清單中已有的節日。請使用中文描述。
                     }
-                ]
             }
             請給我純文字就好"""
         },
@@ -195,7 +194,7 @@ def generate_hw03(question2, question3):
 
     
 def generate_hw04(question):
-'''
+    '''
     image_path = "baseball.png"
     data_url = local_image_to_data_url(image_path)
 
@@ -255,8 +254,10 @@ def generate_hw04(question):
             }
         ]
     )
-    '''
+    
     return response["choices"][0]["message"]["content"]
+    '''
+    return ""
     
 def demo(question):
     llm = AzureChatOpenAI(
